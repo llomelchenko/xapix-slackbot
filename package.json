@@ -1,0 +1,26 @@
+{
+  "name": "xapix-slackbot",
+  "version": "1.0.0",
+  "description": "A demo slackbot that uses Xapix.",
+  "main": "index.js",
+  "dependencies": {
+    "body-parser": "^1.14.2",
+    "ejs": "2.3.3",
+    "express": "4.13.3",
+    "request": "^2.67.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": ""
+  },
+  "homepage": ""
+}
