@@ -32,39 +32,30 @@ app.get('/', function(req, res) {
 });
 
 app.post('/post', function(req, res) {
-  console.log('req body: ', req.body);
+    console.log('req body: ', req.body);
     var options = {
-        url: 'https://xap.ix-io.net/api/v1/my_project_n1OWkqND/airports/'+req.body.text,
+        url: 'https://xap.ix-io.net/api/v1/my_project_n1OWkqND/airports/' + req.body.text,
         headers: {
             'Authorization': process.env.AUTH_KEY,
             'Accept': 'application/json'
         }
-        //just added this below - havent tested
-        // query: {
-        //     q: req.body.text
-        // }
     };
 
     console.log(options);
 
     request(options, function(error, response, body) {
-      console.log(body);
+        console.log(body);
         if (!error && response.statusCode == 200) {
             var data = JSON.parse(body);
 
-            // var body = {
-            //     response_type: "in_channel",
-            //     text: data
-            // };
-
-            res.send(body);
-        } else if(error){
-          res.send(error);
-        } else {
-          res.send(body);
+            var resBody = {
+                response_type: "in_channel",
+                text: body
+            };
+            res.send(resBody);
+        } else if (error) {
+            res.send(error);
         }
-
-
     });
 });
 
