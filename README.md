@@ -1,11 +1,11 @@
-# Slack Genius
+# Xapix Slackbot
 
 _A Slackbot that uses the xapix api_.
 
 
 This Slackbot that receives input through a [slash command](https://api.slack.com/slash-commands) and sends a request to a xapix API.
 
-This project is initally based on a great demo project from Medium: [https://goo.gl/wDyayI](https://goo.gl/wDyayI)
+This project is initally based on a great demo project from Medium: [https://goo.gl/wDyayI](https://goo.gl/wDsyayI)
 
 ## Installation
 
