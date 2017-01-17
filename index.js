@@ -12,8 +12,9 @@ app.use(bodyParser.urlencoded({
 }));
 
 //Constants
-const baseURL = 'https://xap.ix-io.net/api/v1/my_project_n1OWkqND/airports/';
-const uberBaseURL = 'https://xap.ix-io.net/api/v1/uber/products_by_coordinates';
+const baseURL = 'https://xap.ix-io.net/api/v1';
+const airportBaseURL = baseURL + '/my_project_n1OWkqND/airports/';
+const uberBaseURL = baseURL + '/uber/products_by_coordinates';
 const xapxi_headers = {
     'Authorization': process.env.AUTH_KEY,
     'Accept': 'application/json'
@@ -24,10 +25,9 @@ app.set('port', (process.env.PORT || 9001));
 //Just a test function - will not do anything with actual slack commands
 app.get('/', function(req, res) {
     let options = {
-        url: baseURL + _.toUpper('dca'),
+        url: airportBaseURL + _.toUpper('dca'),
         headers: xapxi_headers
     };
-
     rp(options)
         .then(response => {
             return setUpUberReq(response);
@@ -42,24 +42,38 @@ app.get('/', function(req, res) {
 app.post('/post', function(req, res) {
     console.log('req body: ', req.body);
     let options = {
-        url: baseURL + req.body.text,
+        url: airportBaseURL + _.toUpper(req.body.text),
         headers: xapxi_headers
     };
 
-    request(options, function(error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var data = JSON.parse(body);
-
+    rp(options)
+        .then(response => {
+            return setUpUberReq(response);
+        })
+        .then(response => {
+            // var response_new = parseUberResp(response);
             var resBody = {
-                response_type: "in_channel",
-                text: body
-            };
+                        response_type: "in_channel",
+                        text: parseUberResp(response)
+                    };
+            return res.send(resBody);
+        })
+        .catch(err => res.send('Airport not found.')) // Don't forget to catch errors
 
-            res.send(resBody);
-        } else if (error) {
-            res.send(error);
-        }
-    });
+    // request(options, function(error, response, body) {
+    //     if (!error && response.statusCode == 200) {
+    //         var data = JSON.parse(body);
+    //
+    //         var resBody = {
+    //             response_type: "in_channel",
+    //             text: body
+    //         };
+    //
+    //         res.send(resBody);
+    //     } else if (error) {
+    //         res.send(error);
+    //     }
+    // });
 });
 
 function setUpUberReq(airportResp) {
@@ -72,14 +86,11 @@ function setUpUberReq(airportResp) {
             'filter[longitude]': airportdata.airport.longitude
         }
     };
-
-
     return rp(options)
 }
 
 function parseUberResp(uberResp) {
     const uberdata = JSON.parse(uberResp);
-
     if (uberdata.products_by_coordinates) {
         return createUberServicesList(uberdata);
     } else {
