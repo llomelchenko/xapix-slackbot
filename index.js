@@ -1,9 +1,12 @@
 const express = require('express');
 const app = express();
+
 const url = require('url');
 const request = require('request');
 const rp = require('request-promise');
 const _ = require('lodash');
+const moment = require('moment');
+moment().format();
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
@@ -12,11 +15,12 @@ app.use(bodyParser.urlencoded({
 }));
 
 //Constants
+const xapix_auth_key = process.env.AUTH_KEY || require('./token.js');
 const baseURL = 'https://xap.ix-io.net/api/v1';
-const airportBaseURL = baseURL + '/my_project_n1OWkqND/airports/';
-const uberBaseURL = baseURL + '/uber/products_by_coordinates';
+const airportBaseURL = baseURL + '/my_project_trUN0hXK/airports/';
+const uberBaseURL = baseURL + '/uber/time_estimates';
 const xapxi_headers = {
-    'Authorization': process.env.AUTH_KEY,
+    'Authorization': xapix_auth_key,
     'Accept': 'application/json'
 };
 
@@ -25,18 +29,23 @@ app.set('port', (process.env.PORT || 9001));
 //Just a test function - will not do anything with actual slack commands
 app.get('/', function(req, res) {
     let options = {
-        url: airportBaseURL + _.toUpper('dca'),
+        url: airportBaseURL + _.toUpper('bos'),
         headers: xapxi_headers
     };
     rp(options)
         .then(response => {
+            console.log('airport success');
             return setUpUberReq(response);
         })
         .then(response => {
+            console.log('uber success');
             var response_new = parseUberResp(response);
             return res.send(response_new);
         })
-        .catch(err => res.send('Airport not found.')) // Don't forget to catch errors
+        .catch(err => {
+          console.log(err);
+            res.send('Airport not found.');
+        }) // Don't forget to catch errors
 });
 
 app.post('/post', function(req, res) {
@@ -53,27 +62,12 @@ app.post('/post', function(req, res) {
         .then(response => {
             // var response_new = parseUberResp(response);
             var resBody = {
-                        response_type: "in_channel",
-                        text: parseUberResp(response)
-                    };
+                response_type: "in_channel",
+                text: parseUberResp(response)
+            };
             return res.send(resBody);
         })
         .catch(err => res.send('Airport not found.')) // Don't forget to catch errors
-
-    // request(options, function(error, response, body) {
-    //     if (!error && response.statusCode == 200) {
-    //         var data = JSON.parse(body);
-    //
-    //         var resBody = {
-    //             response_type: "in_channel",
-    //             text: body
-    //         };
-    //
-    //         res.send(resBody);
-    //     } else if (error) {
-    //         res.send(error);
-    //     }
-    // });
 });
 
 function setUpUberReq(airportResp) {
@@ -82,8 +76,8 @@ function setUpUberReq(airportResp) {
         url: uberBaseURL,
         headers: xapxi_headers,
         qs: {
-            'filter[latitude]': airportdata.airport.latitude,
-            'filter[longitude]': airportdata.airport.longitude
+            'filter[lat]': airportdata.airport.latitude,
+            'filter[lon]': airportdata.airport.longitude
         }
     };
     return rp(options)
@@ -91,7 +85,7 @@ function setUpUberReq(airportResp) {
 
 function parseUberResp(uberResp) {
     const uberdata = JSON.parse(uberResp);
-    if (uberdata.products_by_coordinates) {
+    if (uberdata.time_estimates) {
         return createUberServicesList(uberdata);
     } else {
         return 'There are no services available at this location.';
@@ -100,10 +94,13 @@ function parseUberResp(uberResp) {
 
 function createUberServicesList(uberdata) {
     let uberList = "The following uber services are available: ";
-    _.forEach(uberdata.products_by_coordinates, product => {
+    _.forEach(uberdata.time_estimates, product => {
         uberList = uberList + product.display_name + ', ';
+        console.log(product);
     });
-    return _.trimEnd(uberList, ', ');
+    console.log(_.trimEnd(uberList, ', '))
+    // return _.trimEnd(uberList, ', ');
+    return uberdata;
 }
 
 app.listen(app.get('port'), function() {

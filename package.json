@@ -8,6 +8,7 @@
     "ejs": "2.3.3",
     "express": "4.13.3",
     "lodash": "^4.17.4",
+    "moment": "^2.17.1",
     "request": "^2.67.0",
     "request-promise": "^4.1.1"
   },
