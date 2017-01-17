@@ -1,8 +1,6 @@
 const express = require('express');
 const app = express();
 
-const url = require('url');
-const request = require('request');
 const rp = require('request-promise');
 const _ = require('lodash');
 const moment = require('moment');
@@ -34,18 +32,15 @@ app.get('/', function(req, res) {
     };
     rp(options)
         .then(response => {
-            console.log('airport success');
             return setUpUberReq(response);
         })
         .then(response => {
-            console.log('uber success');
             var response_new = parseUberResp(response);
             return res.send(response_new);
         })
         .catch(err => {
-            console.log(err);
             res.send('Airport not found.');
-        }) // Don't forget to catch errors
+        })
 });
 
 app.post('/post', function(req, res) {
@@ -60,14 +55,13 @@ app.post('/post', function(req, res) {
             return setUpUberReq(response);
         })
         .then(response => {
-            // var response_new = parseUberResp(response);
             var resBody = {
                 response_type: "in_channel",
                 text: parseUberResp(response)
             };
             return res.send(resBody);
         })
-        .catch(err => res.send('Airport not found.')) // Don't forget to catch errors
+        .catch(err => res.send('Airport not found.'))
 });
 
 function setUpUberReq(airportResp) {
