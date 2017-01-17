@@ -13,7 +13,6 @@ app.use(bodyParser.urlencoded({
 app.set('port', (process.env.PORT || 9001));
 
 app.get('/', function(req, res) {
-    console.log('get func');
 
     var options = {
         url: 'https://xap.ix-io.net/api/v1/my_project_n1OWkqND/airports/JFK',
@@ -23,10 +22,7 @@ app.get('/', function(req, res) {
         }
     };
 
-    console.log('auth key: ', process.env.AUTH_KEY);
-
     request(options, function(error, response, body) {
-        console.log(body);
         if (!error && response.statusCode == 200) {
             var data = JSON.parse(body);
             res.send(data);
@@ -36,8 +32,9 @@ app.get('/', function(req, res) {
 });
 
 app.post('/post', function(req, res) {
+  console.log('req body: ', req.body);
     var options = {
-        url: 'https://xap.ix-io.net/api/v1/my_project_n1OWkqND/airports/DCA'+req.body.text,
+        url: 'https://xap.ix-io.net/api/v1/my_project_n1OWkqND/airports/'+req.body.text,
         headers: {
             'Authorization': process.env.AUTH_KEY,
             'Accept': 'application/json'
@@ -48,7 +45,10 @@ app.post('/post', function(req, res) {
         // }
     };
 
+    console.log(options);
+
     request(options, function(error, response, body) {
+      console.log(body);
         if (!error && response.statusCode == 200) {
             var data = JSON.parse(body);
             // var first_url = data.response.hits[0].result.url;
