@@ -29,7 +29,7 @@ app.set('port', (process.env.PORT || 9001));
 //Just a test function - will not do anything with actual slack commands
 app.get('/', function(req, res) {
     let options = {
-        url: airportBaseURL + _.toUpper('bos'),
+        url: airportBaseURL + _.toUpper('jfk'),
         headers: xapxi_headers
     };
     rp(options)
@@ -43,7 +43,7 @@ app.get('/', function(req, res) {
             return res.send(response_new);
         })
         .catch(err => {
-          console.log(err);
+            console.log(err);
             res.send('Airport not found.');
         }) // Don't forget to catch errors
 });
@@ -95,12 +95,15 @@ function parseUberResp(uberResp) {
 function createUberServicesList(uberdata) {
     let uberList = "The following uber services are available: ";
     _.forEach(uberdata.time_estimates, product => {
-        uberList = uberList + product.display_name + ', ';
-        console.log(product);
+        uberList = uberList + product.display_name + ' ('+getMinutesDisplay(product.estimate)+'), ';
     });
     console.log(_.trimEnd(uberList, ', '))
-    // return _.trimEnd(uberList, ', ');
-    return uberdata;
+    return _.trimEnd(uberList, ', ');
+}
+
+function getMinutesDisplay(seconds) {
+    let minutes = Math.floor(seconds / 60);
+    return minutes + ' minutes';
 }
 
 app.listen(app.get('port'), function() {
