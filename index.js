@@ -74,7 +74,6 @@ function setUpUberReq(airportResp) {
             'filter[lon]': airportdata.airport.position_longitude
         }
     };
-    debugger
     return rp(options)
 }
 
