@@ -15,7 +15,7 @@ app.use(bodyParser.urlencoded({
 //Constants
 const xapix_auth_key = process.env.AUTH_KEY || require('./token.js');
 const baseURL = 'https://xap.ix-io.net/api/v1';
-const airportBaseURL = baseURL + '/my_project_trUN0hXK/airports/';
+const airportBaseURL = baseURL + '/lufthansa/airports/';
 const uberBaseURL = baseURL + '/uber/time_estimates';
 const xapix_headers = {
     'Authorization': xapix_auth_key,
