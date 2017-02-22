@@ -27,7 +27,7 @@ app.set('port', (process.env.PORT || 9001));
 //Just a test function - will not do anything with actual slack commands
 app.get('/', function(req, res) {
     let options = {
-        url: airportBaseURL + _.toUpper('jfk'),
+        url: airportBaseURL + _.toUpper('aal'),
         headers: xapix_headers
     };
     rp(options)
@@ -74,6 +74,7 @@ function setUpUberReq(airportResp) {
             'filter[lon]': airportdata.airport.position_longitude
         }
     };
+    debugger
     return rp(options)
 }
 
